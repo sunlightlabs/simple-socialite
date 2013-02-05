@@ -1,0 +1,22 @@
+{
+  "name": "Simple-socialite",
+  "version": "0.1.0",
+  "author": "Dan Drinkard, Sunlight Labs",
+  "engines": {
+  "node": ">= 0.6"
+},
+  "dependencies": { },
+  "devDependencies": {
+  "uglify-js": "~>1",
+  "coffee-script": ">=1.2",
+  "underscore": "*",
+  "underscore.string": "*",
+  "bower": "*",
+  "q": "*",
+  "github-download": "*",
+  "copysync": "*",
+  "wrench": "*",
+  "glob": "*"
+},
+  "license": "MIT"
+}

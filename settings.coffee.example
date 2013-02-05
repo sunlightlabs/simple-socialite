@@ -1,0 +1,55 @@
+###
+Example settings file for simple-socialite build process
+Copy this file to settings.coffee
+
+DEBUG: true|false*
+This toggles whether or not debug output will be written to the console at execution time
+
+DEFAULT_LANG:
+The language to set up services with by default. Not every service supports i18n.
+
+ICON_BASE_URL:
+A url to the icon collection you'd like to render buttons with. This expects to find
+2 folders below it, named 16 and 24, in which are 16x16 and 24x24px images, like so:
+ICON_BASE_URL/
+    16/
+        email.png
+        facebook.png
+        googleplus.png
+        tumblr.png
+        twitter.png
+    24/
+        email.png
+        facebook.png
+        googleplus.png
+        tumblr.png
+        twitter.png
+
+You'll need an image for each service you intend to use that accepts a data-image parameter
+
+SOCIALITE_SOURCE:
+A github git url to the repo the build process should fetch socialite from, with the path
+to socialite.js separated by a pound. The default is David Bushell's original implementation,
+but if you're using a fork, you can include it this way.
+
+
+EXTENSIONS_PATH:
+A relative file path where extensions should be written when building. This path will get
+cleaned up with each build, so don't use a path that already has files in it.
+
+EXTENSIONS_SOURCES:
+A list of github urls to search for possible extensions to bundle in to the build process.
+Paths to extensions are denoted after the #, as in Socialite Source.
+Later repos take priority over earlier repos.
+
+###
+
+exports.settings =
+  DEBUG: false
+  DEFAULT_LANG: 'en-US'
+  ICON_BASE_URL: ''
+  SOCIALITE_SOURCE: 'git://github.com/dbushell/Socialite#socialite.js'
+  EXTENSIONS_PATH: './components/extensions'
+  EXTENSIONS_SOURCES: [
+    'git://github.com/dbushell/Socialite.git#extensions'
+  ]

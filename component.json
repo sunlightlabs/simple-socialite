@@ -1,0 +1,8 @@
+{
+  "name": "simple-socialite",
+  "version": "0.1.0",
+  "main": ["./src/"],
+  "dependencies": {
+    "jquery": ">1.7.0"
+  }
+}
