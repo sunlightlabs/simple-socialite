@@ -19,7 +19,7 @@ check = =>
 
     $ = jQuery
     DEBUG = ("{% settings.DEBUG %}".toLowerCase() == "true") or false
-    debug (msgs...) ->
+    debug = (msgs...) ->
       DEBUG && console? && console.log(msgs...)
 
     ###
@@ -281,10 +281,14 @@ check = =>
         el = this
         trigger = $(this).attr('data-gigya') or $(this).attr('data-socialite')
 
-        $(this).on(trigger, =>
-          initShareBar(el).render())
+        try
+          $(this).on(trigger, =>
+            initShareBar(el).render())
+        catch e
+          $(this).bind(trigger, =>
+            initShareBar(el).render())
 
-        if $(this).attr('data-gigya') is 'auto' or $(this).attr('data-socialite') is 'auto'
+        if trigger is 'auto'
           initShareBar(el).render()
 
 ###
