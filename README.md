@@ -11,4 +11,6 @@ That said:
 
 (fills out settings)
 
+`npm install`
+
 `cake --extensions 'twitter facebook googleplus hackernews' build`
