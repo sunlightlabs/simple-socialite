@@ -150,7 +150,8 @@ check = =>
           cursor.append btn
 
         @wrapper.empty().append(@rendered)
-        Socialite.load(@wrapper)
+        debug "loading contents of #{@wrapper}"
+        Socialite.load(@wrapper[0])
 
 
     ###
@@ -270,6 +271,7 @@ check = =>
     Main bootstrap on dom ready
     ###
     $ ->
+      debug "running onready bootstrap"
       initShareBar = (el) ->
         try
           $(el).data 'socialite', new ShareBar(el)
@@ -279,13 +281,13 @@ check = =>
 
       $('.share-buttons').filter('[data-gigya], [data-socialite]').each ->
         el = this
-        trigger = $(this).attr('data-gigya') or $(this).attr('data-socialite')
+        trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
 
         try
-          $(this).on(trigger, =>
+          $(el).on(trigger, =>
             initShareBar(el).render())
         catch e
-          $(this).bind(trigger, =>
+          $(el).bind(trigger, =>
             initShareBar(el).render())
 
         if trigger is 'auto'
