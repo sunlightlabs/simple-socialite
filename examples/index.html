@@ -2,11 +2,19 @@
     <head>
     </head>
     <body>
+        <h1>Hello world with simple-socialite:</h1>
+        <p>This example makes use of extra extensions from <code>drinks/socialite-extensions.</code></p>
+        <p>To include them in your build, add <code>'git://github.com/drinks/socialite.git#extensions'</code> to <code>EXTENSIONS_SOURCES</code> in your settings file, and build like this:</p>
+        <pre><code>
+            cake -e 'twitter-simple facebook-share linkedin linkedin-simple googleplus-simple hackernews tumblr-simple' build
+        </code></pre>
+        <p>Then run an http server in the root folder of simple-socialite and you're all set!</p>
         <h2>Horizontal</h2>
         <div class="share-buttons"
              data-socialite="auto"
              data-services="twitter,twitter-tweet,facebook,facebook-like,linkedin,linkedin-share,googleplus,googleplus-one,hackernews-share,tumblr"
              data-options="linkBack=http%3A%2F%2Fgoogle.com&amp;width=100&amp;text=Foo bar baz"
+             data-googleplus-one-options="showCounts=right"
              data-facebook-like-options="layout=button_count"
              data-twitter-tweet-options="hashtags=things&amp;via=sunfoundation"></div>
         <h2>Vertical</h2>
