@@ -7,6 +7,7 @@ An unobtrusive, tag-based API for socialite.js
 Usage:
 <div class="share-buttons" data-socialite="auto" data-services="twitter, facebook"></div>
 ###
+
 tries = 0
 check = =>
   if not jQuery?
@@ -44,8 +45,21 @@ check = =>
       $.each parts, (i, part) =>
         if i % 2
           opts[parts[i - 1]] = decodeURIComponent part
+      debug opts
       opts
 
+    # Implement underscore's html escape because jquery text() isn't cutting it
+    htmlEscapes =
+      '&': '&amp;'
+      '<': '&lt;'
+      '>': '&gt;'
+      '"': '&quot;'
+      "'": '&#x27;'
+      '/': '&#x2F;'
+    htmlEscaper = /[&<>"'\/]/g;
+    $.safeString = (s) ->
+      ('' + s).replace(htmlEscaper, (match) ->
+        htmlEscapes[match])
 
     ###
     Individual share button class
@@ -59,7 +73,13 @@ check = =>
         opts = ''
         @options = new OptionMapper(@provider, @options).translate()
         $.each @options, (key, val) =>
-          escaped_val = $('<div>' + val + '</div>').text()
+          try
+            val = val.replace(/"/g, "'")
+          catch e
+            #pass
+          debug val
+          escaped_val = $.safeString val
+          debug escaped_val
           opts += "data-#{key}=\"#{escaped_val}\" "
         opts.replace(/\ $/, '')
 
