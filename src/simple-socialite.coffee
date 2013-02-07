@@ -73,13 +73,7 @@ check = =>
         opts = ''
         @options = new OptionMapper(@provider, @options).translate()
         $.each @options, (key, val) =>
-          try
-            val = val.replace(/"/g, "'")
-          catch e
-            #pass
-          debug val
           escaped_val = $.safeString val
-          debug escaped_val
           opts += "data-#{key}=\"#{escaped_val}\" "
         opts.replace(/\ $/, '')
 
