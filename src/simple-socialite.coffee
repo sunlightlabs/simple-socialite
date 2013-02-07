@@ -194,10 +194,10 @@ check = =>
                 delete @options['annotation']
                 if @options['showCounts'] is 'top'
                   @options['size'] = 'tall'
+            if @options['size'] is 24 or (@options['size'] is 16 and @options['showCounts'] is 'right')
+              delete @options['size']
             if @options['size'] is 16
               @options['size'] = 'small'
-            if @options['size'] is 24
-              delete @options['size']
             unless @options['href']
               (@options['href'] = @options['url']) and delete @options['url']
             @options
