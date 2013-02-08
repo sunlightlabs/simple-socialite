@@ -286,24 +286,38 @@ check = =>
     ###
     $ ->
       debug "running onready bootstrap"
+      selector = '.share-buttons[data-socialite], .share-buttons[data-gigya]'
       initShareBar = (el) ->
         try
-          $(el).data 'socialite', new ShareBar(el)
-          $(el).data 'socialite'
+          $(el).data 'sharebar', new ShareBar(el)
+          $(el).data 'sharebar'
         catch e
           debug "Caught error initializing sharebar: #{e}"
 
-      $('.share-buttons').filter('[data-gigya], [data-socialite]').each ->
-        el = this
+      register = (el) ->
+        el = $(el)
         trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
-
         try
           $(el).on(trigger, =>
-            initShareBar(el).render())
+            initShareBar(el[0]).render())
         catch e
           $(el).bind(trigger, =>
-            initShareBar(el).render())
+            initShareBar(el[0]).render())
+        el
 
+      try
+        $('body').on('register.simplesocialite', selector, ->
+          register this
+        )
+      catch e
+        $('body').delegate('register.simplesocialite', selector, ->
+          register this
+        )
+
+      $(selector).each ->
+        el = this
+        trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
+        register el
         if trigger is 'auto'
           initShareBar(el).render()
 
