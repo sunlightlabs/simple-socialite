@@ -2,7 +2,7 @@
 Simple-Socialite
 ----------------
 
-An unobtrusive, tag-based API for socialite.js
+A silently failing, HTML tag-based abstraction API for socialite.js
 
 Usage:
 <div class="share-buttons" data-socialite="auto" data-services="twitter, facebook"></div>
@@ -296,14 +296,14 @@ check = =>
 
       register = (el) ->
         el = $(el)
-        trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
+        trigger = el.attr('data-gigya') or $(el).attr('data-socialite')
         try
-          $(el).on(trigger, =>
+          el.on(trigger, =>
             initShareBar(el[0]).render())
         catch e
-          $(el).bind(trigger, =>
+          el.bind(trigger, =>
             initShareBar(el[0]).render())
-        el
+        el.trigger('auto');
 
       try
         $('body').on('register.simplesocialite', selector, ->
@@ -318,8 +318,6 @@ check = =>
         el = this
         trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
         register el
-        if trigger is 'auto'
-          initShareBar(el).render()
 
 ###
 Kick off the jQuery check
