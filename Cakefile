@@ -163,6 +163,7 @@ install_socialite = (callback) ->
 minify = (callback) ->
   infiles = "./build/*.js"
   paths = glob.sync(infiles)
+  zipjobs = []
   for infile in paths
     do (infile) ->
       outfile = infile.replace(/\.js$/, '.min.js')
@@ -171,7 +172,11 @@ minify = (callback) ->
       ast = pro.ast_mangle(ast)
       ast = pro.ast_squeeze(ast)
       fs.writeFileSync outfile, pro.gen_code(ast)
-  callback?()
+      zipjobs.push(_handle_sysio(exec("gzip #{infile}")))
+  Q.when(zipjobs...)
+    .done( ->
+      callback?()
+  )
 
 pack = (callback) ->
   [repo, path] = settings.SOCIALITE_SOURCE.split '#'
@@ -204,6 +209,7 @@ verify = (callback) ->
 
 _handle_sysio = (proc, name) ->
   dfd = Q.defer()
+
   proc.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   proc.stdout.on 'data', (data) ->

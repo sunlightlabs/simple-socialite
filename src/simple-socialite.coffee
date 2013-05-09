@@ -141,8 +141,8 @@ check = =>
         "github-watch": {}
         "github-fork": {}
         "github-follow": {}
-        "email": {}
         "tumblr-simple": {}
+        "email-simple": {}
 
       serviceMappings: ->
         "twitter": "twitter-simple"
@@ -153,6 +153,7 @@ check = =>
         "linkedin": "linkedin-simple"
         "pinterest": "pinterest-pinit"
         "tumblr": "tumblr-simple"
+        "email": "email-simple"
 
       render: ->
         @rendered = @container()
