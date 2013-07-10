@@ -172,7 +172,8 @@ minify = (callback) ->
       ast = pro.ast_mangle(ast)
       ast = pro.ast_squeeze(ast)
       fs.writeFileSync outfile, pro.gen_code(ast)
-      zipjobs.push(_handle_sysio(exec("gzip #{infile}")))
+      zipjobs.push(_handle_sysio(exec("gzip -c #{infile} > #{infile}.gz")))
+      zipjobs.push(_handle_sysio(exec("gzip -c #{infile.replace('.js', '.min.js')} > #{infile.replace('.js', '.min.js')}.gz")))
   Q.when(zipjobs...)
     .done( ->
       callback?()
