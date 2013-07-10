@@ -8,6 +8,15 @@ Usage:
 <div class="share-buttons" data-socialite="auto" data-services="twitter, facebook"></div>
 ###
 
+###
+Global object for classes
+###
+window.SimpleSocialite ?= {}
+
+###
+check() ensures all dependencies are loaded
+before defining any classes that reference them.
+###
 tries = 0
 check = =>
   if not jQuery?
@@ -66,6 +75,18 @@ check = =>
     Takes a string @provider and object @options
     ###
     class ShareButton
+      @customNames: ->
+        @_customNames ?=
+          "twitter-share": "Twitter"
+          "facebook-like": "Facebook"
+          "pinterest-pinit": "Pinterest"
+          "googleplus-one": "Google Plus"
+
+      @registerCustomName: (name, displayName) ->
+        if @customNames()[name]?
+          throw "Custom name #{name} is already registered."
+        @_customNames[name] = displayName
+
       constructor: (@provider, @options) ->
         #pass
 
@@ -78,13 +99,7 @@ check = =>
         opts.replace(/\ $/, '')
 
       provider_display: ->
-        custom =
-          "twitter-share": "Twitter"
-          "facebook-like": "Facebook"
-          "pinterest-pinit": "Pinterest"
-          "googleplus-one": "Google Plus"
-
-        custom[@provider] or ( =>
+        @constructor.customNames()[@provider] or ( =>
           name = @provider.replace /-simple$/, ''
           parts = name.split(' ')
           $.each parts, (i, part) ->
@@ -94,6 +109,7 @@ check = =>
       render: ->
         "<a href='' class='socialite #{@provider}' #{@to_html_params()}>Share on #{@provider_display()}</a>"
 
+    window.SimpleSocialite.ShareButton = ShareButton
 
     ###
     Share bar class
@@ -101,62 +117,90 @@ check = =>
     new ShareBar $('<div class="share-buttons" data-socialite="auto" data-services="facebook,twitter"></div>')
     ###
     class ShareBar
+      @container: ->
+        @_container ?= $ "<table style='vertical-align:middle;'><tbody></tbody></table>"
+
+      @setContainer: (str) ->
+        @_container = $ str
+
+      @defaults: ->
+        @_defaults ?=
+          layout: 'horizontal'  # vertical
+          shortURLs: 'never'  # always, whenRequired
+          showTooltips: false  # true
+
+      @setDefault: (key, val) ->
+        @_defaults ?= @defaults()
+        @_defaults[key] = val
+        @_defaults
+
+      @services: ->
+        @_services ?=
+          "twitter-simple": {}
+          "twitter-share": {}
+          "twitter-follow": {}
+          "twitter-mention": {}
+          "twitter-hashtag": {}
+          "twitter-embed": {}
+          "facebook-like": {}
+          "facebook-share": {}
+          "googleplus-simple": {}
+          "googleplus-one": {}
+          "linkedin-share": {}
+          "linkedin-simple": {}
+          "linkedin-recommend": {}
+          "pinterest-pinit": {}
+          "spotify-play": {}
+          "hackernews-share": {}
+          "github-watch": {}
+          "github-fork": {}
+          "github-follow": {}
+          "tumblr-simple": {}
+          "email-simple": {}
+
+      @serviceMappings: ->
+        @_serviceMappings ?=
+          "twitter": "twitter-simple"
+          "twitter-tweet": "twitter-share"
+          "facebook": "facebook-share"
+          "googleplus": "googleplus-simple"
+          "google-plusone": "googleplus-one"
+          "linkedin": "linkedin-simple"
+          "pinterest": "pinterest-pinit"
+          "tumblr": "tumblr-simple"
+          "email": "email-simple"
+
+      @registerButton: (opts) ->
+        name = opts.name
+        nickname = opts.nickname
+        defaults = opts.defaults or {}
+        if opts.displayName?
+          displayName = opts.displayName
+        if not opts.name?
+          throw 'You must provide a name to register.'
+        if @services()[name]? or @serviceMappings()[nickname]?
+          throw "Name #{name} is already registered."
+        if @serviceMappings()[nickname]?
+          throw "Nickname #{nickname} is already registered."
+        @_services[name] = defaults
+        @_serviceMappings[nickname] = name
+        if displayName?
+          ShareButton.registerCustomName(name, displayName)
+
       constructor: (@wrapper) ->
         @wrapper = $ @wrapper
-        @options = $.extend {}, @defaults(), $(@wrapper).getDataOptions()
+        @options = $.extend {}, @constructor.defaults(), $(@wrapper).getDataOptions()
         @buttons = []
         $.each @options.services.split(/, ?/), (i, service) =>
-          resolvedService = @serviceMappings()[service] or service
+          resolvedService = @constructor.serviceMappings()[service] or service
           @buttons.push(new ShareButton(resolvedService, $.extend({},
-                                        @services()[resolvedService],
+                                        @constructor.services()[resolvedService],
                                         @options.options,
                                         @options["#{resolvedService}-options"]
                                         @options["#{service}-options"])))
 
-      container: ->
-        $ "<table style='vertical-align:middle;'><tbody></tbody></table>"
-
-      defaults: ->
-        layout: 'horizontal'  # vertical
-        shortURLs: 'never'  # always, whenRequired
-        showTooltips: false  # true
-
-      services: ->
-        "twitter-simple": {}
-        "twitter-share": {}
-        "twitter-follow": {}
-        "twitter-mention": {}
-        "twitter-hashtag": {}
-        "twitter-embed": {}
-        "facebook-like": {}
-        "facebook-share": {}
-        "googleplus-simple": {}
-        "googleplus-one": {}
-        "linkedin-share": {}
-        "linkedin-simple": {}
-        "linkedin-recommend": {}
-        "pinterest-pinit": {}
-        "spotify-play": {}
-        "hackernews-share": {}
-        "github-watch": {}
-        "github-fork": {}
-        "github-follow": {}
-        "tumblr-simple": {}
-        "email-simple": {}
-
-      serviceMappings: ->
-        "twitter": "twitter-simple"
-        "twitter-tweet": "twitter-share"
-        "facebook": "facebook-share"
-        "googleplus": "googleplus-simple"
-        "google-plusone": "googleplus-one"
-        "linkedin": "linkedin-simple"
-        "pinterest": "pinterest-pinit"
-        "tumblr": "tumblr-simple"
-        "email": "email-simple"
-
       render: ->
-        @rendered = @container()
+        @rendered = @constructor.container()
         cursor = @rendered.find('tbody')
         cursor = @rendered.append('<tr></tr>').find('tr') if @options.layout is 'horizontal'
         $.each @buttons, (i, button) =>
@@ -168,6 +212,7 @@ check = =>
         debug "loading contents of #{@wrapper}"
         Socialite.load(@wrapper[0])
 
+    window.SimpleSocialite.ShareBar ?= ShareBar
 
     ###
     Option mapper class
