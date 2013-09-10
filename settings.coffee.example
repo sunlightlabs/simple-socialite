@@ -48,8 +48,8 @@ exports.settings =
   DEBUG: false
   DEFAULT_LANG: 'en-US'
   ICON_BASE_URL: 'images'
-  SOCIALITE_SOURCE: 'git://github.com/dbushell/Socialite#socialite.js'
+  SOCIALITE_SOURCE: 'dbushell/Socialite#socialite.js'
   EXTENSIONS_PATH: './components/extensions'
   EXTENSIONS_SOURCES: [
-    'git://github.com/dbushell/Socialite.git#extensions'
+    'dbushell/Socialite.git#extensions'
   ]

@@ -29,7 +29,7 @@ task 'clean', 'Deletes the /build folder', ->
 task 'clean_sources', 'Deletes the extension source cache', ->
   verify -> clean_sources -> finish('Source cache cleaned.')
 
-task 'install_components', 'Installs any dependencies declared in component.json', ->
+task 'install_components', 'Installs any dependencies declared in bower.json', ->
   verify -> install_components -> finish('Bower dependencies installed.')
 
 task 'install_socialite', 'Grab socialite from github and put it in the correct place', ->

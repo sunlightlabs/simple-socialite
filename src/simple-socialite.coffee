@@ -75,12 +75,14 @@ check = =>
     Takes a string @provider and object @options
     ###
     class ShareButton
+      @_customNames ?=
+        "twitter-share": "Twitter"
+        "facebook-like": "Facebook"
+        "pinterest-pinit": "Pinterest"
+        "googleplus-one": "Google Plus"
+
       @customNames: ->
-        @_customNames ?=
-          "twitter-share": "Twitter"
-          "facebook-like": "Facebook"
-          "pinterest-pinit": "Pinterest"
-          "googleplus-one": "Google Plus"
+        @_customNames
 
       @registerCustomName: (name, displayName) ->
         if @customNames()[name]?
@@ -117,17 +119,56 @@ check = =>
     new ShareBar $('<div class="share-buttons" data-socialite="auto" data-services="facebook,twitter"></div>')
     ###
     class ShareBar
+      @_container = $ "<table style='vertical-align:middle;'><tbody></tbody></table>"
+
+      @_defaults =
+        layout: 'horizontal'  # vertical
+        shortURLs: 'never'  # always, whenRequired
+        showTooltips: false  # true
+
+      @_services =
+        "twitter-simple": {}
+        "twitter-share": {}
+        "twitter-follow": {}
+        "twitter-mention": {}
+        "twitter-hashtag": {}
+        "twitter-embed": {}
+        "facebook-like": {}
+        "facebook-share": {}
+        "googleplus-simple": {}
+        "googleplus-one": {}
+        "linkedin-share": {}
+        "linkedin-simple": {}
+        "linkedin-recommend": {}
+        "pinterest-pinit": {}
+        "spotify-play": {}
+        "hackernews-share": {}
+        "github-watch": {}
+        "github-fork": {}
+        "github-follow": {}
+        "tumblr-simple": {}
+        "email-simple": {}
+
+      @_serviceMappings =
+        "twitter": "twitter-simple"
+        "twitter-tweet": "twitter-share"
+        "facebook": "facebook-share"
+        "googleplus": "googleplus-simple"
+        "google-plusone": "googleplus-one"
+        "linkedin": "linkedin-simple"
+        "pinterest": "pinterest-pinit"
+        "tumblr": "tumblr-simple"
+        "email": "email-simple"
+
       @container: ->
-        @_container ?= $ "<table style='vertical-align:middle;'><tbody></tbody></table>"
+        @_container.clone()
 
       @setContainer: (str) ->
         @_container = $ str
 
       @defaults: ->
-        @_defaults ?=
-          layout: 'horizontal'  # vertical
-          shortURLs: 'never'  # always, whenRequired
-          showTooltips: false  # true
+        @_defaults
+
 
       @setDefault: (key, val) ->
         @_defaults ?= @defaults()
@@ -135,40 +176,10 @@ check = =>
         @_defaults
 
       @services: ->
-        @_services ?=
-          "twitter-simple": {}
-          "twitter-share": {}
-          "twitter-follow": {}
-          "twitter-mention": {}
-          "twitter-hashtag": {}
-          "twitter-embed": {}
-          "facebook-like": {}
-          "facebook-share": {}
-          "googleplus-simple": {}
-          "googleplus-one": {}
-          "linkedin-share": {}
-          "linkedin-simple": {}
-          "linkedin-recommend": {}
-          "pinterest-pinit": {}
-          "spotify-play": {}
-          "hackernews-share": {}
-          "github-watch": {}
-          "github-fork": {}
-          "github-follow": {}
-          "tumblr-simple": {}
-          "email-simple": {}
+        @_services
 
       @serviceMappings: ->
-        @_serviceMappings ?=
-          "twitter": "twitter-simple"
-          "twitter-tweet": "twitter-share"
-          "facebook": "facebook-share"
-          "googleplus": "googleplus-simple"
-          "google-plusone": "googleplus-one"
-          "linkedin": "linkedin-simple"
-          "pinterest": "pinterest-pinit"
-          "tumblr": "tumblr-simple"
-          "email": "email-simple"
+        @_serviceMappings
 
       @registerButton: (opts) ->
         name = opts.name
@@ -202,7 +213,7 @@ check = =>
       render: ->
         @rendered = @constructor.container()
         cursor = @rendered.find('tbody')
-        cursor = @rendered.append('<tr></tr>').find('tr') if @options.layout is 'horizontal'
+        cursor = cursor.append('<tr></tr>').find('tr') if @options.layout is 'horizontal'
         $.each @buttons, (i, button) =>
           btn = $ "<td>#{button.render()}</td>"
           btn = btn.wrap('<tr></tr>').parents('tr') if @options.layout is 'vertical'
@@ -356,14 +367,59 @@ check = =>
           register this
         )
       catch e
-        $('body').delegate('register.simplesocialite', selector, ->
+        $('body').delegate(selector, 'register.simplesocialite', ->
           register this
         )
 
       $(selector).each ->
-        el = this
-        trigger = $(el).attr('data-gigya') or $(el).attr('data-socialite')
-        register el
+        register this
+
+      ###
+      Set up GA tracking for the basic social networks and for clicks
+      that bubble through `.socialite-instance`s, if _gaq is present
+      ###
+      if window._gaq?
+        # facebook
+        initFB = () ->
+          FB.Event.subscribe 'edge.create', (url) ->
+            debug 'tracking facebook'
+            _gaq.push(['_trackSocial', 'facebook', 'like', url])
+          FB.Event.subscribe 'edge.remove', (url) ->
+            _gaq.push(['_trackSocial', 'facebook', 'unlike', url])
+        window._fbAsyncInit = window.fbAsyncInit
+        window.fbAsyncInit = () ->
+          if typeof window._fbAsyncInit == 'function'
+            window._fbAsyncInit()
+          initFB()
+        if window.FB?
+          initFB()
+
+        # twitter
+        if window.twttr?
+          trackTwitter = (evt) ->
+            debug 'tracking twitter'
+            try
+              path = if (evt && evt.target && evt.target.nodeName == 'IFRAME') then $.optionsFromQueryString(evt.target.src.split('?')[1]).url else null
+            catch e
+              path = null
+            _gaq.push(['_trackSocial', 'twitter', 'tweet', (path || location.href)])
+
+          twttr.ready((twttr) ->
+            twttr.events.bind('tweet', trackTwitter)
+          )
+
+        # basic
+        trackBasic = (evt) ->
+          if $(evt.target).hasClass('.socialite-instance')
+            el = $(evt.target)
+          else
+            el = $(evt.target).parents('.socialite-instance').eq(0)
+          button = el.attr('class').split(' ')[1]
+          # trackTwitter() will catch 'simple' button tweets using intents, so skip them here.
+          return if button.match(/twitter/) and window.twttr?
+          debug "tracking #{button}"
+          _gaq.push(['_trackSocial', button, 'share', location.href])
+        ($().on? && $('body').on('click', '.socialite-instance', trackBasic)) || $('body').delegate('.socialite-instance', 'click', trackBasic)
 
 ###
 Kick off the jQuery check

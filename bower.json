@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "main": ["./src/"],
   "dependencies": {
-    "jquery": ">1.7.0"
+    "jquery": ">1.7.0"  // used only for examples
   }
 }
