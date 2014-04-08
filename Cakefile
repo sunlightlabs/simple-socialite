@@ -1,5 +1,4 @@
 fs = require 'fs'
-{print} = require 'util'
 {exec} = require 'child_process'
 
 Q = null
@@ -75,7 +74,7 @@ compile = (callback) ->
   )
 
 finish = (message, callback) ->
-  print "#{message}\n"
+  console.log "#{message}"
   callback?()
 
 install_components = (callback) ->
@@ -144,7 +143,7 @@ install_extensions = (options, callback) ->
       do (ext) ->
         filename = "#{cache_path}/socialite.#{ext}.js"
         if fs.existsSync(filename)
-          print "Found #{ext}.\n"
+          console.log "Found #{ext}."
           fs.renameSync filename, "#{path}/socialite.#{ext}.js"
           resolved_exts.push ext
     wrench.rmdirSyncRecursive cache_path if cache_path[0] == '.'
@@ -155,7 +154,7 @@ install_extensions = (options, callback) ->
 
 install_socialite = (callback) ->
   [repo, jspath] = settings.SOCIALITE_SOURCE.split '#'
-  Q.when(_handle_gh_download(repo, "./components/socialite"))
+  Q.when(_handle_gh_download(repo, "./components/socialite", "socialite"))
   .done( ->
     callback?()
   )
@@ -214,7 +213,7 @@ _handle_sysio = (proc, name) ->
   proc.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   proc.stdout.on 'data', (data) ->
-    print data.toString()
+    console.log data.toString()
   proc.on 'exit', (code) ->
     dfd.reject("'#{name}' exited with error code: #{code}") unless code is 0
     dfd.resolve()
@@ -227,6 +226,6 @@ _handle_gh_download = (repo, dest, name) ->
     dfd.resolve dest
   )
   .on('error', (e) ->
-    dfd.reject("'{name}' failed to download: #{e}")
+    dfd.reject("'#{name}' failed to download: #{e}")
   )
   dfd.promise

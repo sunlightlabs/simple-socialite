@@ -300,6 +300,7 @@ check = =>
         {
         "facebook-share": "facebook"
         "googleplus-one": "googleplus"
+        "googleplus-simple": "google-plus"
         }[@provider] or @provider.replace(/-simple$/, '')
 
       button_img: ->
@@ -319,8 +320,10 @@ check = =>
           @options['url'] = $('meta[property="og:url"]').attr('content') or location.href
         unless @options['title']
           @options['title'] = $('meta[property="og:title"]').attr('content') or document.title
-        if not @options['image']
-          @options['image'] = @button_img()
+        # unless @options['image']
+        #   @options['image'] = @button_img()
+        unless @options['icon'] or @options['image']
+          @options['icon'] = "sficon-#{@provider_icon_name()}"
         # unset showCounts=none if anyone did it
         if @options['showCounts'] in ['none', 'false', 'never']
           delete @options['showCounts']
