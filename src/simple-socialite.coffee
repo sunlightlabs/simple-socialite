@@ -134,7 +134,7 @@ check = =>
         "twitter-hashtag": {}
         "twitter-embed": {}
         "facebook-like": {}
-        "facebook-share": {}
+        "facebook-simple": {}
         "googleplus-simple": {}
         "googleplus-one": {}
         "linkedin-share": {}
@@ -152,7 +152,7 @@ check = =>
       @_serviceMappings =
         "twitter": "twitter-simple"
         "twitter-tweet": "twitter-share"
-        "facebook": "facebook-share"
+        "facebook": "facebook-simple"
         "googleplus": "googleplus-simple"
         "google-plusone": "googleplus-one"
         "linkedin": "linkedin-simple"
@@ -298,7 +298,7 @@ check = =>
 
       provider_icon_name: ->
         {
-        "facebook-share": "facebook"
+        "facebook-simple": "facebook"
         "googleplus-one": "googleplus"
         "googleplus-simple": "google-plus"
         }[@provider] or @provider.replace(/-simple$/, '')
@@ -324,6 +324,7 @@ check = =>
         #   @options['image'] = @button_img()
         unless @options['icon'] or @options['image']
           @options['icon'] = "sficon-#{@provider_icon_name()}"
+        (@options['sficon'] = @options['icon']) and delete @options['icon'] if @options['icon']?
         # unset showCounts=none if anyone did it
         if @options['showCounts'] in ['none', 'false', 'never']
           delete @options['showCounts']

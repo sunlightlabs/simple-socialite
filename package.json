@@ -2,18 +2,19 @@
   "name": "Simple-socialite",
   "version": "0.1.0",
   "author": "Dan Drinkard, Sunlight Labs",
+  "repository": "https://github.com/sunlightlabs/simple-socialite",
   "engines": {
   "node": ">= 0.6"
 },
   "dependencies": { },
   "devDependencies": {
   "uglify-js": "~>1",
-  "coffee-script": ">=1.2",
+  "coffee-script": "*",
   "underscore": "*",
   "underscore.string": "*",
   "bower": "*",
   "q": "*",
-  "github-download": "0.2.0",
+  "github-download": "*",
   "copysync": "*",
   "wrench": "*",
   "glob": "*"

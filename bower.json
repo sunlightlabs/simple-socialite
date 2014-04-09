@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "main": ["./src/"],
   "dependencies": {
-    "jquery": "~>1.7.0"
+    "jquery": "~>1.7.0",
+    "socialite": "tmort/socialite",
+    "socialite-extensions": "drinks/socialite-extensions",
+    "sf-icons": "sunlightlabs/sf-icons"
   }
 }
