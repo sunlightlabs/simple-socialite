@@ -29,12 +29,7 @@ Implement all your widgets via a single tag:
 
 ## Adding extensions
 
-You can compile in other extensions by adding to `settings.EXTENSIONS_SOURCES`, with a git url and relative path to the repo's extensions separated by a `#`:
-
-    EXTENSIONS_SOURCES = [
-        'git://github.com/dbushell/Socialite.git#extensions'
-        'git://github.com/drinks/socialite-extensions.git#extensions'
-    ]
+You can compile in other extensions by adding them to `bower.json`. Any files matching the glob `bower_components/**/extensions/socialite.*.js` will be eligible to be rolled into the build.
 
 Then build, including the new extensions by name:
 
