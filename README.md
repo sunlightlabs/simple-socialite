@@ -6,7 +6,7 @@ A silently failing, HTML tag-based abstraction API for [dbushell/socialite](http
 ## Getting started
 Simple-Socialite is written in CoffeeScript.  Install a global version of CoffeeScript before trying to build
 
-    $ npm install -g coffee-script
+    $ npm install -g coffee-script bower
 
 Build your own and post assets to a server:
 

@@ -131,8 +131,8 @@ verify_extensions = (options, callback) ->
   promises = []
 
   _local_mkdir_p(EXTENSIONS_CACHE_PATH)
-
-  for path in settings.EXTENSIONS_PATHS
+  
+  for path in settings.EXTENSIONS_PATH
     extension_paths = extension_paths.concat(glob.sync(path))
 
   for ext in exts
@@ -145,9 +145,11 @@ verify_extensions = (options, callback) ->
         console.log "Found #{ext} at #{filename}."
         copysync filename, "#{EXTENSIONS_CACHE_PATH}"
         resolved_exts.push ext
-  diff = _.difference(exts,resolved_exts)
-  if diff.length
-    throw "Unable to resolve extension(s) #{diff.join(', ')} in any sources!"
+
+  # diff = _.difference(exts,resolved_exts)
+  # if diff.length
+    # throw "Unable to resolve extension(s) #{diff.join(', ')} in any sources!"
+    
   callback?()
 
 _local_mkdir_p = (path) ->
